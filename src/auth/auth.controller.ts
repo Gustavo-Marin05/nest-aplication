@@ -21,14 +21,23 @@ export class AuthController {
             maxAge: 1000 * 60 * 60 * 24 // 1 día
         });
 
-        return result ;
+        return result;
     }
 
     @Post('register')
     @UsePipes(new ValidationPipe())
-    async register(@Body() user: RegisterUserDto) {
-        console.log({ user })
-        return this.authService.registerService(user);
+    async register(@Body() user: RegisterUserDto, @Response({ passthrough: true }) res: Res) {
+        const result = await this.authService.registerService(user);
+
+        res.cookie('token', result.acces_token, {
+            httpOnly: true,
+            secure: false, // Cambia a true si usas HTTPS en producción
+            maxAge: 1000 * 60 * 60 * 24, // 1 día
+            sameSite: 'strict',
+        });
+
+        return { message: 'Usuario registrado y autenticado' };
+
     }
 
     //comprobacion si me devuelve todos los usuarios
@@ -47,6 +56,12 @@ export class AuthController {
     ) {
 
         return req.user;
+    }
+
+    @Post('logout')
+    logout(@Response({ passthrough: true }) res: Res) {
+        res.clearCookie('token');
+        return { message: 'Sesión cerrada' };
     }
 
 }
