@@ -17,9 +17,11 @@ export class AuthController {
 
         res.cookie('token', result.acces_token, {
             httpOnly: true,
-            secure: false, // true si usas HTTPS
-            maxAge: 1000 * 60 * 60 * 24 // 1 día
+            secure: process.env.NODE_ENV === 'production',  // true solo en prod con HTTPS
+            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+            maxAge: 1000 * 60 * 60 * 24, // 1 día
         });
+
 
         return result;
     }
