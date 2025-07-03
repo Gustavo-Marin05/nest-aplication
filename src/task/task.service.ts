@@ -10,8 +10,22 @@ export class TaskService {
 
 
 
-    getAlltask() {
-        return 'estos son todas las tareas'
+    async getAlltask(userId: number) {
+        try {
+            //console.log('userId recibido en getAlltask:', userId);
+            const tasks =await this.prismaService.task.findMany({
+                where:{
+                    userId:userId
+                }
+            });
+
+            return tasks;
+        } catch (error) {
+            if (error instanceof BadRequestException) {
+                throw error
+            }
+            throw new Error(error)
+        }
     }
 
 
