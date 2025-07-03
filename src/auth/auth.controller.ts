@@ -1,70 +1,71 @@
-import { Body, Controller, Get, Post, Request, Response, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Request,
+  Response,
+  UseGuards,
+  UsePipes,
+  ValidationPipe,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterUserDto } from './dto/create-auth.dto';
 import { AuthGuard } from './guard/auth.guard';
 import { Response as Res } from 'express';
 
-
-
 @Controller()
 export class AuthController {
-    constructor(private readonly authService: AuthService) { }
+  constructor(private readonly authService: AuthService) {}
 
-    @Post('login')
-    @UsePipes(new ValidationPipe())
-    async login(@Body() user: RegisterUserDto, @Response({ passthrough: true }) res: Res) {
-        const result = await this.authService.loginService(user.email, user.password);
+  @Post('login')
+  @UsePipes(new ValidationPipe())
+  async login(@Body() user: RegisterUserDto, @Response({ passthrough: true }) res: Res) {
+    const result = await this.authService.loginService(user.email, user.password);
 
-        res.cookie('token', result.acces_token, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',  // true solo en prod con HTTPS
-            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-            maxAge: 1000 * 60 * 60 * 24, // 1 día
-        });
+    const isProduction = process.env.NODE_ENV === 'production';
 
+    res.cookie('token', result.acces_token, {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: isProduction ? 'none' : 'lax',
+      maxAge: 1000 * 60 * 60 * 24,
+    });
 
-        return result;
-    }
+    return { message: 'Login exitoso' };
+  }
 
-    @Post('register')
-    @UsePipes(new ValidationPipe())
-    async register(@Body() user: RegisterUserDto, @Response({ passthrough: true }) res: Res) {
-        const result = await this.authService.registerService(user);
+  @Post('register')
+  @UsePipes(new ValidationPipe())
+  async register(@Body() user: RegisterUserDto, @Response({ passthrough: true }) res: Res) {
+    const result = await this.authService.registerService(user);
 
-        res.cookie('token', result.acces_token, {
-            httpOnly: true,
-            secure: false, // Cambia a true si usas HTTPS en producción
-            maxAge: 1000 * 60 * 60 * 24, // 1 día
-            sameSite: 'strict',
-        });
+    const isProduction = process.env.NODE_ENV === 'production';
 
-        return { message: 'Usuario registrado y autenticado' };
+    res.cookie('token', result.acces_token, {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: isProduction ? 'none' : 'lax',
+      maxAge: 1000 * 60 * 60 * 24,
+    });
 
-    }
+    return { message: 'Usuario registrado y autenticado' };
+  }
 
-    //comprobacion si me devuelve todos los usuarios
-    @Get('users')
-    async getUsers() {
-        return this.authService.getUsers()
-    }
+  @Get('users')
+  async getUsers() {
+    return this.authService.getUsers();
+  }
 
+  @Get('profile')
+  @UseGuards(AuthGuard)
+  async profileController(@Request() req) {
+    return req.user;
+  }
 
-    @Get('profile')
-    @UseGuards(AuthGuard)
-    async profileController(
-        @Request()
-        req,
-
-    ) {
-
-        return req.user;
-    }
-
-    @Post('logout')
-    logout(@Response({ passthrough: true }) res: Res) {
-        res.clearCookie('token');
-        return { message: 'Sesión cerrada' };
-    }
-
+  @Post('logout')
+  logout(@Response({ passthrough: true }) res: Res) {
+    res.clearCookie('token');
+    return { message: 'Sesión cerrada' };
+  }
 }
-
