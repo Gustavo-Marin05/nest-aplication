@@ -9,7 +9,7 @@ async function bootstrap() {
 
 
   app.enableCors({
-    origin: true, // Cambia esto al URL de tu frontend
+    origin: 'http://localhost:5173', // Cambia esto al URL de tu frontend
     credentials: true,               // Permite enviar cookies en peticiones
   });
 
