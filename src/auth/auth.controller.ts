@@ -13,17 +13,16 @@ import { AuthService } from './auth.service';
 import { RegisterUserDto } from './dto/create-auth.dto';
 import { AuthGuard } from './guard/auth.guard';
 import { Response as Res } from 'express';
+import { LoginUserDto } from './dto/login-auth.dto';
 
 @Controller()
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(private readonly authService: AuthService) { }
 
   @Post('login')
   @UsePipes(new ValidationPipe())
-  async login(@Body() user: RegisterUserDto, @Response({ passthrough: true }) res: Res) {
+  async login(@Body() user: LoginUserDto, @Response({ passthrough: true }) res: Res) {
     const result = await this.authService.loginService(user.email, user.password);
-
-    const isProduction = process.env.NODE_ENV === 'production';
 
     res.cookie('token', result.acces_token, {
       httpOnly: true,
