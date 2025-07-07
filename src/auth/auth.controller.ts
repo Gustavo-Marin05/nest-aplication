@@ -27,7 +27,7 @@ export class AuthController {
     res.cookie('token', result.acces_token, {
       httpOnly: true,
       secure: true,
-      sameSite: 'lax',
+      sameSite: 'none',
       maxAge: 1000 * 60 * 60 * 24,
     });
 
@@ -64,7 +64,11 @@ export class AuthController {
 
   @Post('logout')
   logout(@Response({ passthrough: true }) res: Res) {
-    res.clearCookie('token');
+    res.clearCookie('token', {
+      httpOnly: true,
+      secure: true,          // debe coincidir con el login
+      sameSite: 'none',      // debe coincidir con el login
+    });
     return { message: 'Sesión cerrada' };
   }
 }
