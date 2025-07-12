@@ -24,10 +24,12 @@ export class AuthController {
   async login(@Body() user: LoginUserDto, @Response({ passthrough: true }) res: Res) {
     const result = await this.authService.loginService(user.email, user.password);
 
+    const isProduction = process.env.NODE_ENV === 'production';
+
     res.cookie('token', result.acces_token, {
       httpOnly: true,
-      secure: false,
-      sameSite: 'none',
+      secure: isProduction, // true en producción (HTTPS), false en localhost
+      sameSite: isProduction ? 'none' : 'lax',
       maxAge: 1000 * 60 * 60 * 24,
     });
 
@@ -39,12 +41,15 @@ export class AuthController {
   async register(@Body() user: RegisterUserDto, @Response({ passthrough: true }) res: Res) {
     const result = await this.authService.registerService(user);
 
+    const isProduction = process.env.NODE_ENV === 'production';
+
     res.cookie('token', result.acces_token, {
       httpOnly: true,
-      secure: true,
-      sameSite: 'none' ,
+      secure: isProduction, // true en producción (HTTPS), false en localhost
+      sameSite: isProduction ? 'none' : 'lax',
       maxAge: 1000 * 60 * 60 * 24,
     });
+
 
     return { message: 'Usuario registrado y autenticado' };
   }
@@ -62,11 +67,14 @@ export class AuthController {
 
   @Post('logout')
   logout(@Response({ passthrough: true }) res: Res) {
+    const isProduction = process.env.NODE_ENV === 'production';
+
     res.clearCookie('token', {
       httpOnly: true,
-      secure: true,          // debe coincidir con el login
-      sameSite: 'none',      // debe coincidir con el login
+      secure: isProduction,
+      sameSite: isProduction ? 'none' : 'lax',
     });
+
     return { message: 'Sesión cerrada' };
   }
 }
