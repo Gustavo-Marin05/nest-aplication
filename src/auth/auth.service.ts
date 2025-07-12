@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { RegisterUserDto } from './dto/create-auth.dto';
 import { compare, encrypt } from './libs/bcryp';
@@ -7,7 +7,7 @@ import { JwtService } from '@nestjs/jwt';
 @Injectable()
 export class AuthService {
 
-    constructor(private prismaService: PrismaService, private jwrService: JwtService) {}
+    constructor(private prismaService: PrismaService, private jwrService: JwtService) { }
 
     //parte del login de autentificacion 
     async loginService(email: string, password: string) {
@@ -85,15 +85,15 @@ export class AuthService {
     }
 
     //no devuelve todos los usuarios
-    async getUsers() {
-        try {
-            const users = await this.prismaService.user.findMany();
-            return users;
-        } catch (error) {
-            if (error instanceof BadRequestException) {
-                throw error
-            }
-            throw new Error(error)
-        }
+    async profile(user: any) {
+        // Aquí puedes devolver solo lo que quieres exponer
+        // por ejemplo:
+        if (!user) throw new UnauthorizedException();
+
+        return {
+            id: user.id,
+            email: user.email,
+            // cualquier otro dato que tengas en el payload JWT
+        };
     }
 }

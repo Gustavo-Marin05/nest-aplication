@@ -1,4 +1,3 @@
-
 import {
   CanActivate,
   ExecutionContext,
@@ -9,8 +8,6 @@ import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 import { jwtConstants } from '../constants';
 
-
-
 @Injectable()
 export class AuthGuard implements CanActivate {
 
@@ -18,22 +15,26 @@ export class AuthGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
-     const token = request.cookies?.token;
+    const token = request.cookies?.token;
+    
     if (!token) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException('Token no encontrado');
     }
 
     try {
-      const payload = await this.jwtService.verifyAsync(token);
-      // 💡 We're assigning the payload to the request object here
-      // so that we can access it in our route handlers
-      //request['user'] = payload;
-      request.user=payload;
+      // ✅ Agregada configuración del secret
+      const payload = await this.jwtService.verifyAsync(token, {
+        secret: jwtConstants.secret
+      });
       
-    } catch {
-      throw new UnauthorizedException();
+      // 💡 Asignamos el payload al request object
+      request.user = payload;
+
+    } catch (error) {
+      console.error('Error al verificar token:', error);
+      throw new UnauthorizedException('Token inválido');
     }
-    
+
     return true;
   }
 
@@ -41,5 +42,4 @@ export class AuthGuard implements CanActivate {
     const [type, token] = request.headers.authorization?.split(' ') ?? [];
     return type === 'Bearer' ? token : undefined;
   }
-
 }

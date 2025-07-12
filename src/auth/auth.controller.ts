@@ -26,7 +26,7 @@ export class AuthController {
 
     res.cookie('token', result.acces_token, {
       httpOnly: true,
-      secure: true,
+      secure: false,
       sameSite: 'none',
       maxAge: 1000 * 60 * 60 * 24,
     });
@@ -39,28 +39,26 @@ export class AuthController {
   async register(@Body() user: RegisterUserDto, @Response({ passthrough: true }) res: Res) {
     const result = await this.authService.registerService(user);
 
-    const isProduction = process.env.NODE_ENV === 'production';
-
     res.cookie('token', result.acces_token, {
       httpOnly: true,
-      secure: isProduction,
-      sameSite: isProduction ? 'none' : 'lax',
+      secure: false,
+      sameSite: 'none' ,
       maxAge: 1000 * 60 * 60 * 24,
     });
 
     return { message: 'Usuario registrado y autenticado' };
   }
 
-  @Get('users')
-  async getUsers() {
-    return this.authService.getUsers();
-  }
+
 
   @Get('profile')
   @UseGuards(AuthGuard)
-  async profileController(@Request() req) {
-    return req.user;
+  async getProfile(@Request() req) {
+    return this.authService.profile(req.user);
   }
+
+
+
 
   @Post('logout')
   logout(@Response({ passthrough: true }) res: Res) {
