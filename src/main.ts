@@ -10,7 +10,7 @@ async function bootstrap() {
   app.use(cookieParser());
 
   app.enableCors({
-    origin: 'http://localhost:5173', // 👈 sin barra al final
+    origin: 'https://mitarea-0rtj.onrender.com', // 👈 sin barra al final
     credentials: true,
   });
 
