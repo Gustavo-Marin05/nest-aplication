@@ -8,7 +8,6 @@ import { Request, Response } from 'express';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  app.use(express.json());
   app.use(cookieParser());
 
   app.enableCors({
@@ -16,17 +15,17 @@ async function bootstrap() {
     credentials: true,
   });
 
-  // 🔧 Obtener la instancia de Express que usa NestJS internamente
+  // Accede a la instancia subyacente de Express
   const expressApp = app.getHttpAdapter().getInstance();
 
-  // 📁 Servir archivos estáticos del build de React
+  // Servir los archivos estáticos de React
   expressApp.use(express.static(join(__dirname, '..', 'dist')));
 
-  // 🌐 Redirigir todas las rutas no API al index.html (React SPA)
+  // Redirigir cualquier otra ruta al index.html de React
   expressApp.get('*', (req: Request, res: Response) => {
     res.sendFile(join(__dirname, '..', 'dist', 'index.html'));
   });
 
-  await app.listen(process.env.PORT ?? 3000);
+  await app.listen(process.env.PORT || 3000);
 }
 bootstrap();
