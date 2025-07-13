@@ -8,7 +8,7 @@ async function bootstrap() {
   app.use(cookieParser());
 
   app.enableCors({
-    origin: 'https://mitarea-0rtj.onrender.com', // URL de tu frontend en Render
+    origin: 'https://frontend-nest-getiontareas.vercel.app/', // URL de tu frontend en vercel
     credentials: true,
   });
 
