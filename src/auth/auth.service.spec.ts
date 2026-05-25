@@ -12,8 +12,6 @@ import { encrypt, compare } from './libs/bcryp';
 
 describe('AuthService', () => {
   let service: AuthService;
-  let prisma: any;
-  let jwtService: any;
 
   const mockPrisma = {
     user: {
@@ -36,8 +34,6 @@ describe('AuthService', () => {
     }).compile();
 
     service = module.get<AuthService>(AuthService);
-    prisma = module.get(PrismaService);
-    jwtService = module.get(JwtService);
   });
 
   afterEach(() => {

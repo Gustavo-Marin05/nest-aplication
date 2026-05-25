@@ -17,12 +17,18 @@ import { LoginUserDto } from './dto/login-auth.dto';
 
 @Controller()
 export class AuthController {
-  constructor(private readonly authService: AuthService) { }
+  constructor(private readonly authService: AuthService) {}
 
   @Post('login')
   @UsePipes(new ValidationPipe())
-  async login(@Body() user: LoginUserDto, @Response({ passthrough: true }) res: Res) {
-    const result = await this.authService.loginService(user.email, user.password);
+  async login(
+    @Body() user: LoginUserDto,
+    @Response({ passthrough: true }) res: Res,
+  ) {
+    const result = await this.authService.loginService(
+      user.email,
+      user.password,
+    );
 
     const isProduction = process.env.NODE_ENV === 'production';
 
@@ -38,7 +44,10 @@ export class AuthController {
 
   @Post('register')
   @UsePipes(new ValidationPipe())
-  async register(@Body() user: RegisterUserDto, @Response({ passthrough: true }) res: Res) {
+  async register(
+    @Body() user: RegisterUserDto,
+    @Response({ passthrough: true }) res: Res,
+  ) {
     const result = await this.authService.registerService(user);
 
     const isProduction = process.env.NODE_ENV === 'production';
@@ -50,20 +59,14 @@ export class AuthController {
       maxAge: 1000 * 60 * 60 * 24,
     });
 
-
     return { message: 'Usuario registrado y autenticado' };
   }
-
-
 
   @Get('profile')
   @UseGuards(AuthGuard)
   async getProfile(@Request() req) {
     return this.authService.profile(req.user);
   }
-
-
-
 
   @Post('logout')
   logout(@Response({ passthrough: true }) res: Res) {

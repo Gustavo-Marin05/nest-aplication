@@ -5,7 +5,6 @@ import { AuthGuard } from 'src/auth/guard/auth.guard';
 
 describe('TaskController', () => {
   let controller: TaskController;
-  let taskService: any;
 
   const mockTaskService = {
     createTask: jest.fn(),
@@ -25,7 +24,6 @@ describe('TaskController', () => {
       .compile();
 
     controller = module.get<TaskController>(TaskController);
-    taskService = module.get(TaskService);
   });
 
   afterEach(() => {

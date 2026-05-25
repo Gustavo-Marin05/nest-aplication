@@ -5,7 +5,6 @@ import { AuthGuard } from './guard/auth.guard';
 
 describe('AuthController', () => {
   let controller: AuthController;
-  let authService: any;
 
   const mockAuthService = {
     loginService: jest.fn(),
@@ -30,7 +29,6 @@ describe('AuthController', () => {
       .compile();
 
     controller = module.get<AuthController>(AuthController);
-    authService = module.get(AuthService);
   });
 
   afterEach(() => {

@@ -90,7 +90,9 @@ describe('App (e2e)', () => {
     });
 
     it('POST /logout should clear cookie', async () => {
-      const res = await request(app.getHttpServer()).post('/logout').expect(201);
+      const res = await request(app.getHttpServer())
+        .post('/logout')
+        .expect(201);
 
       expect(res.body.message).toBe('Sesión cerrada');
     });

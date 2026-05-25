@@ -1,5 +1,4 @@
 import { AuthGuard } from './auth.guard';
-import { JwtService } from '@nestjs/jwt';
 import { UnauthorizedException } from '@nestjs/common';
 
 describe('AuthGuard', () => {

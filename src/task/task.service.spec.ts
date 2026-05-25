@@ -6,7 +6,6 @@ import { BadRequestException } from '@nestjs/common';
 
 describe('TaskService', () => {
   let service: TaskService;
-  let prisma: any;
 
   const mockPrisma = {
     task: {
@@ -30,7 +29,6 @@ describe('TaskService', () => {
     }).compile();
 
     service = module.get<TaskService>(TaskService);
-    prisma = module.get(PrismaService);
   });
 
   afterEach(() => {
@@ -133,7 +131,12 @@ describe('TaskService', () => {
   describe('updateTask', () => {
     it('should update and return the task', async () => {
       mockPrisma.task.findFirst.mockResolvedValue({ id: 1 });
-      const updated = { id: 1, title: 'Updated', description: 'Desc', userId: 1 };
+      const updated = {
+        id: 1,
+        title: 'Updated',
+        description: 'Desc',
+        userId: 1,
+      };
       mockPrisma.task.update.mockResolvedValue(updated);
 
       const result = await service.updateTask(1, 1, { title: 'Updated' });

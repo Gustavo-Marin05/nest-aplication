@@ -6,7 +6,8 @@ import { JwtModule } from '@nestjs/jwt';
 import { jwtConstants } from './constants';
 
 @Module({
-  imports: [PrismaModule,
+  imports: [
+    PrismaModule,
     JwtModule.register({
       global: true,
       secret: jwtConstants.secret,
@@ -14,7 +15,7 @@ import { jwtConstants } from './constants';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService], 
-  exports: [JwtModule]
+  providers: [AuthService],
+  exports: [JwtModule],
 })
-export class AuthModule { }
+export class AuthModule {}
